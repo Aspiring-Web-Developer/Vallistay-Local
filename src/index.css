@@ -1,0 +1,40 @@
+html, body, #root {
+  margin: 0;
+  padding: 0;
+}
+
+body{
+  margin-left: 0px;
+
+}
+
+
+
+/* font-family: "Lato", -apple-system, BlinkMacSystemFont,
+             "Segoe UI", Roboto, Helvetica, Arial, sans-serif; */
+
+  /* background: #21263C; */
+  /* width: 256px; */
+
+  /* It closely matches one of these: */
+
+/* Lucide React ⭐ (closest match)
+Remix Icons
+Heroicons
+A few custom SVG icons mixed in */
+
+/* padding: 12px 10px; */
+/* height: 44px;
+border-radius: 8px;
+padding: 0 14px;
+gap: 12px; */
+
+/* Sidebar BG      : #21263C
+Sidebar Width   : 256px
+Active Item     : #4584E5
+Hover           : #2E3550
+Primary Text    : #FFFFFF
+Secondary Text  : #C8D0E0
+Border          : #2C324B
+Icons           : Lucide React (very close)
+Font            : Lato */

@@ -1,0 +1,1021 @@
+/* ─── Valli Stay Dashboard Theme Variables ─────────────────────────────────── */
+:root {
+  --dashboard-bg: #f7f9fc;
+  --dashboard-surface: #ffffff;
+  --dashboard-surface-muted: #f4f7fb;
+  --dashboard-border: #e7edf5;
+  --dashboard-text: #172033;
+  --dashboard-text-muted: #728096;
+  --dashboard-text-light: #94a3b8;
+  --dashboard-primary: #2867dc;
+  --dashboard-primary-hover: #1e52b7;
+  --dashboard-primary-soft: #edf4ff;
+  --dashboard-success: #18a56b;
+  --dashboard-success-soft: #ecfaf3;
+  --dashboard-warning: #df8c21;
+  --dashboard-warning-soft: #fff7e9;
+  --dashboard-danger: #d85a65;
+  --dashboard-danger-soft: #fff0f1;
+  --dashboard-radius: 12px;
+  --dashboard-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
+  --dashboard-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ─── Page Container ───────────────────────────────────────────────────────── */
+.valli-dashboard-page {
+  width: 100%;
+  min-height: 100%;
+  background-color: var(--dashboard-bg);
+  font-family: var(--dashboard-font);
+  color: var(--dashboard-text);
+  box-sizing: border-box;
+}
+
+.valli-dashboard-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: clamp(18px, 2.5vw, 32px);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-sizing: border-box;
+}
+
+/* ─── Dashboard Header ─────────────────────────────────────────────────────── */
+.valli-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.valli-header-breadcrumb {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  color: var(--dashboard-primary);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.valli-breadcrumb-sep {
+  color: var(--dashboard-text-light);
+  margin: 0 4px;
+}
+
+.valli-header-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--dashboard-text);
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.valli-header-subtitle {
+  font-size: 13.5px;
+  color: var(--dashboard-text-muted);
+  margin: 4px 0 0 0;
+}
+
+.valli-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.valli-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #ffffff;
+  border: 1px solid var(--dashboard-border);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--dashboard-text-muted);
+}
+
+.valli-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--dashboard-success);
+}
+
+.valli-period-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.valli-period-icon {
+  position: absolute;
+  left: 10px;
+  color: var(--dashboard-text-muted);
+  pointer-events: none;
+}
+
+.valli-period-select {
+  appearance: none;
+  background: #ffffff;
+  border: 1px solid var(--dashboard-border);
+  border-radius: 8px;
+  padding: 8px 32px 8px 30px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dashboard-text);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.valli-period-select:focus {
+  border-color: var(--dashboard-primary);
+}
+
+.valli-select-chevron {
+  position: absolute;
+  right: 10px;
+  color: var(--dashboard-text-muted);
+  pointer-events: none;
+}
+
+.valli-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--dashboard-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.valli-btn-primary:hover {
+  background: var(--dashboard-primary-hover);
+}
+
+.valli-btn-primary:active {
+  transform: scale(0.99);
+}
+
+/* ─── Card Primitives ──────────────────────────────────────────────────────── */
+.valli-card {
+  background: var(--dashboard-surface);
+  border: 1px solid var(--dashboard-border);
+  border-radius: var(--dashboard-radius);
+  box-shadow: var(--dashboard-shadow);
+  display: flex;
+  flex-direction: column;
+}
+
+.valli-card-header {
+  padding: 18px 22px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--dashboard-border);
+}
+
+.valli-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--dashboard-text);
+  margin: 0;
+}
+
+.valli-card-subtitle {
+  font-size: 12px;
+  color: var(--dashboard-text-muted);
+  margin: 3px 0 0 0;
+}
+
+.valli-card-body {
+  padding: 20px 22px;
+  flex: 1 1 auto;
+}
+
+.valli-card-footer {
+  padding: 12px 22px;
+  border-top: 1px solid var(--dashboard-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ─── KPI Grid (4 Cards) ───────────────────────────────────────────────────── */
+.valli-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.valli-kpi-card {
+  background: #ffffff;
+  border: 1px solid var(--dashboard-border);
+  border-radius: var(--dashboard-radius);
+  padding: 20px 22px;
+  box-shadow: var(--dashboard-shadow);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.valli-kpi-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.valli-kpi-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.valli-kpi-label {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--dashboard-text-muted);
+}
+
+.valli-kpi-icon-wrapper {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.valli-kpi-card.accent-blue .valli-kpi-icon-wrapper {
+  background: var(--dashboard-primary-soft);
+  color: var(--dashboard-primary);
+}
+
+.valli-kpi-card.accent-green .valli-kpi-icon-wrapper {
+  background: var(--dashboard-success-soft);
+  color: var(--dashboard-success);
+}
+
+.valli-kpi-card.accent-amber .valli-kpi-icon-wrapper {
+  background: var(--dashboard-warning-soft);
+  color: var(--dashboard-warning);
+}
+
+.valli-kpi-card.accent-red .valli-kpi-icon-wrapper {
+  background: var(--dashboard-danger-soft);
+  color: var(--dashboard-danger);
+}
+
+.valli-kpi-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--dashboard-text);
+  letter-spacing: -0.4px;
+  margin-bottom: 8px;
+}
+
+.valli-kpi-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--dashboard-text-muted);
+}
+
+.valli-kpi-tag {
+  background: var(--dashboard-primary-soft);
+  color: var(--dashboard-primary);
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+/* ─── Insights Grid (Revenue vs Receivables) ────────────────────────────────── */
+.valli-insights-grid {
+  display: grid;
+  grid-template-columns: 66% 1fr;
+  gap: 20px;
+}
+
+.valli-chart-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.valli-chart-legend {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 12.5px;
+  color: var(--dashboard-text-muted);
+}
+
+.valli-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.valli-legend-badge {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+.valli-legend-badge.blue {
+  background: var(--dashboard-primary);
+}
+
+.valli-legend-badge.green {
+  background: var(--dashboard-success);
+}
+
+.valli-chart-year-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--dashboard-text-light);
+  background: var(--dashboard-surface-muted);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.valli-chart-container {
+  width: 100%;
+  height: 260px;
+}
+
+.valli-revenue-footer {
+  background: #fbfcfe;
+}
+
+.valli-footer-metric {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--dashboard-text-muted);
+}
+
+.valli-footer-metric strong {
+  color: var(--dashboard-text);
+}
+
+.valli-footer-icon {
+  color: var(--dashboard-primary);
+}
+
+.valli-btn-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: var(--dashboard-primary);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.valli-btn-link:hover {
+  text-decoration: underline;
+}
+
+/* ─── Custom Dark Tooltip ──────────────────────────────────────────────────── */
+.valli-chart-tooltip {
+  background: #172033;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 10px 14px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.25);
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.valli-tooltip-month {
+  font-weight: 600;
+  color: #94a3b8;
+  margin-bottom: 2px;
+}
+
+.valli-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.valli-tooltip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.valli-tooltip-dot.blue {
+  background: #3b82f6;
+}
+
+.valli-tooltip-dot.green {
+  background: #10b981;
+}
+
+.valli-tooltip-name {
+  color: #cbd5e1;
+}
+
+.valli-tooltip-val {
+  font-weight: 700;
+  margin-left: auto;
+}
+
+/* ─── Receivables Overview Card ─────────────────────────────────────────────── */
+.valli-icon-pill {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--dashboard-surface-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dashboard-text-muted);
+}
+
+.valli-rec-headline {
+  margin-bottom: 18px;
+}
+
+.valli-rec-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--dashboard-text-muted);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.valli-rec-amount-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.valli-rec-amount {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--dashboard-text);
+  letter-spacing: -0.4px;
+}
+
+.valli-badge-active {
+  background: var(--dashboard-warning-soft);
+  color: var(--dashboard-warning);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+
+.valli-progress-wrap {
+  margin-bottom: 20px;
+}
+
+.valli-progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--dashboard-text-muted);
+  margin-bottom: 6px;
+}
+
+.valli-progress-val {
+  font-weight: 700;
+  color: var(--dashboard-text);
+}
+
+.valli-progress-track {
+  height: 8px;
+  background: var(--dashboard-warning);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.valli-progress-fill {
+  height: 100%;
+  background: var(--dashboard-success);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.valli-breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--dashboard-border);
+  padding-bottom: 18px;
+}
+
+.valli-breakdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.valli-breakdown-key {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--dashboard-text-muted);
+}
+
+.valli-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.dot-green {
+  background: var(--dashboard-success);
+}
+
+.dot-amber {
+  background: var(--dashboard-warning);
+}
+
+.dot-red {
+  background: var(--dashboard-danger);
+}
+
+.valli-breakdown-val {
+  font-weight: 700;
+  color: var(--dashboard-text);
+}
+
+.valli-reminder-callout {
+  background: #fdfaf5;
+  border: 1px solid #f6ebd6;
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  gap: 12px;
+}
+
+.valli-reminder-icon {
+  color: var(--dashboard-warning);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.valli-reminder-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--dashboard-text);
+  margin-bottom: 2px;
+}
+
+.valli-reminder-text {
+  font-size: 11.5px;
+  color: var(--dashboard-text-muted);
+  line-height: 1.4;
+  margin: 0 0 8px 0;
+}
+
+.valli-reminder-action {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--dashboard-primary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.valli-reminder-action:hover {
+  text-decoration: underline;
+}
+
+/* ─── Business Snapshot Card ────────────────────────────────────────────────── */
+.valli-snapshot-header {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.valli-cadence-badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  color: var(--dashboard-text-light);
+}
+
+.valli-snapshot-grid {
+  display: flex;
+  align-items: center;
+  padding: 16px 22px 22px;
+}
+
+.valli-snapshot-block {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+}
+
+.valli-snapshot-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.valli-snapshot-icon.blue {
+  background: var(--dashboard-primary-soft);
+  color: var(--dashboard-primary);
+}
+
+.valli-snapshot-icon.indigo {
+  background: #f0f1ff;
+  color: #5551ff;
+}
+
+.valli-snapshot-icon.green {
+  background: var(--dashboard-success-soft);
+  color: var(--dashboard-success);
+}
+
+.valli-snapshot-number {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--dashboard-text);
+  line-height: 1.1;
+}
+
+.valli-snapshot-label {
+  font-size: 12.5px;
+  color: var(--dashboard-text-muted);
+  margin-top: 3px;
+}
+
+.valli-snapshot-divider {
+  position: absolute;
+  right: 18px;
+  top: 10%;
+  height: 80%;
+  width: 1px;
+  background: var(--dashboard-border);
+}
+
+/* ─── Recent Invoices Table ────────────────────────────────────────────────── */
+.valli-btn-view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: var(--dashboard-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+
+.valli-btn-view-all:hover {
+  background: var(--dashboard-primary-soft);
+}
+
+.valli-table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.valli-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.valli-table th {
+  padding: 12px 22px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--dashboard-text-light);
+  border-bottom: 1px solid var(--dashboard-border);
+  background: #fafbfc;
+}
+
+.valli-table-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  outline: none;
+}
+
+.valli-table-row:hover,
+.valli-table-row:focus-visible {
+  background-color: #fafbfd;
+}
+
+.valli-table td {
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--dashboard-border);
+  font-size: 13px;
+  color: var(--dashboard-text);
+  vertical-align: middle;
+}
+
+.valli-invoice-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--dashboard-primary);
+}
+
+.valli-customer-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.valli-customer-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--dashboard-surface-muted);
+  border: 1px solid var(--dashboard-border);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--dashboard-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.valli-customer-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.valli-customer-name {
+  font-weight: 600;
+  color: var(--dashboard-text);
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.valli-customer-sub {
+  font-size: 11.5px;
+  color: var(--dashboard-text-muted);
+}
+
+.valli-invoice-date {
+  color: var(--dashboard-text-muted);
+}
+
+.valli-invoice-amount {
+  font-weight: 700;
+  color: var(--dashboard-text);
+}
+
+.valli-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.valli-status-dot-sm {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.badge-paid {
+  background: var(--dashboard-success-soft);
+  color: var(--dashboard-success);
+}
+
+.badge-paid .valli-status-dot-sm {
+  background: var(--dashboard-success);
+}
+
+.valli-row-action-btn {
+  background: transparent;
+  border: none;
+  color: var(--dashboard-text-light);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.valli-table-row:hover .valli-row-action-btn {
+  color: var(--dashboard-primary);
+}
+
+/* ─── Table Footer & Pagination ────────────────────────────────────────────── */
+.valli-table-footer {
+  padding: 14px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: var(--dashboard-text-muted);
+}
+
+.valli-pagination {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.valli-page-btn {
+  background: #ffffff;
+  border: 1px solid var(--dashboard-border);
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--dashboard-text);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.valli-page-btn:hover:not(:disabled) {
+  background: var(--dashboard-surface-muted);
+}
+
+.valli-page-btn.active {
+  background: var(--dashboard-primary);
+  color: #ffffff;
+  border-color: var(--dashboard-primary);
+}
+
+.valli-page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── Skeletons & Empty States ─────────────────────────────────────────────── */
+.valli-table-skeleton {
+  padding: 16px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.valli-skeleton-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.valli-skeleton-bar {
+  height: 16px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #eef2f6 25%, #f8fafc 50%, #eef2f6 75%);
+  background-size: 200% 100%;
+  animation: valliShimmer 1.5s infinite;
+}
+
+.valli-skeleton-bar.short { width: 90px; }
+.valli-skeleton-bar.medium { width: 180px; }
+.valli-skeleton-bar.pill { width: 60px; border-radius: 12px; }
+
+@keyframes valliShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.valli-table-empty,
+.valli-chart-empty {
+  padding: 44px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.valli-empty-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: var(--dashboard-surface-muted);
+  color: var(--dashboard-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.valli-empty-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--dashboard-text);
+  margin: 0 0 4px 0;
+}
+
+.valli-empty-text {
+  font-size: 12.5px;
+  color: var(--dashboard-text-muted);
+  margin: 0 0 16px 0;
+}
+
+/* ─── Mobile Invoice Cards ─────────────────────────────────────────────────── */
+.valli-mobile-invoices-list {
+  display: none;
+  flex-direction: column;
+}
+
+.valli-mobile-invoice-card {
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-bottom: 1px solid var(--dashboard-border);
+  cursor: pointer;
+}
+
+.valli-mobile-row-top,
+.valli-mobile-row-mid,
+.valli-mobile-row-bot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.valli-mobile-arrow {
+  color: var(--dashboard-text-light);
+}
+
+/* ─── Responsive Adjustments ───────────────────────────────────────────────── */
+@media (max-width: 1200px) {
+  .valli-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .valli-insights-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .valli-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .valli-snapshot-grid {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .valli-snapshot-divider {
+    display: none;
+  }
+
+  .valli-table-responsive {
+    display: none;
+  }
+
+  .valli-mobile-invoices-list {
+    display: flex;
+  }
+
+  .valli-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .valli-header-right {
+    justify-content: flex-start;
+  }
+}

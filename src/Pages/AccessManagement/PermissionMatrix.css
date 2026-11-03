@@ -1,0 +1,136 @@
+/* =============================================================
+   PermissionMatrix.css  — round custom checkboxes
+   Each action has its own colour (set via --c on the label).
+   ============================================================= */
+
+/* ---------- table layout ---------- */
+.am-matrix-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.am-matrix-table--round { width: 100%; min-width: 660px; }
+.am-matrix-table--round .module-col { width: 34%; min-width: 230px; }
+.am-cell-center { text-align: center; vertical-align: middle; }
+
+.am-th-dot {
+  display: inline-block;
+  width: 7px; height: 7px;
+  margin-right: 6px;
+  border-radius: 50%;
+  vertical-align: 1px;
+}
+.am-mod-name {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+  font-weight: 700; font-size: 13.5px; color: #0f172a;
+}
+.am-mod-desc { font-size: 12px; color: #64748b; }
+.am-mod-note {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #fff1f2;
+  color: #e11d48;
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+/* ---------- round checkbox ---------- */
+.am-rc {
+  --c: #2563eb;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.am-rc input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+
+.am-rc-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  color: #94a3b8;
+  transition: background 0.18s ease, border-color 0.18s ease,
+    transform 0.18s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.18s ease;
+}
+
+/* tick that draws itself */
+.am-rc-dot svg {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 16;
+  stroke-dashoffset: 16;
+  transition: stroke-dashoffset 0.22s ease 0.05s;
+}
+
+/* "some selected" dash (used by the All checkbox) */
+.am-rc-bar {
+  position: absolute;
+  width: 10px;
+  height: 2.5px;
+  border-radius: 2px;
+  background: var(--c);
+  opacity: 0;
+  transform: scaleX(0.4);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.am-rc:hover .am-rc-dot {
+  border-color: var(--c);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 14%, transparent);
+}
+
+.am-rc input:checked + .am-rc-dot {
+  background: var(--c);
+  border-color: var(--c);
+  transform: scale(1.06);
+}
+.am-rc input:checked + .am-rc-dot svg { stroke-dashoffset: 0; }
+
+.am-rc.is-partial .am-rc-dot { border-color: var(--c); }
+.am-rc.is-partial .am-rc-bar { opacity: 1; transform: scaleX(1); }
+
+.am-rc input:focus-visible + .am-rc-dot {
+  outline: 2px solid var(--c);
+  outline-offset: 3px;
+}
+.am-rc:active .am-rc-dot { transform: scale(0.92); }
+
+/* locked / disabled */
+.am-rc.is-locked { cursor: not-allowed; }
+.am-rc.is-locked .am-rc-dot {
+  border-style: dashed;
+  border-color: #e2e8f0;
+  background: #f8fafc;
+  color: #cbd5e1;
+  box-shadow: none;
+  transform: none;
+}
+
+/* touch devices: bigger hit area */
+@media (pointer: coarse) {
+  .am-rc { width: 44px; height: 44px; }
+  .am-rc-dot { width: 24px; height: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .am-rc-dot, .am-rc-dot svg, .am-rc-bar { transition: none; }
+}

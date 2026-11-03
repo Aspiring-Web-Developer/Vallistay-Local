@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Access Management - Valli Stay</title>
+<!-- Tailwind CSS CDN with Forms & Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Inter & Dancing Script/Playfair for Script Logo -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            script: ['"Dancing Script"', 'cursive']
+          },
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af'
+            }
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-layout">
+    body {
+      background-color: #F4F6FB;
+      color: #1e293b;
+      -webkit-font-smoothing: antialiased;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans overflow-x-hidden selection:bg-brand-100 selection:text-brand-700">
+<!-- BEGIN: ToastNotification -->
+<div class="fixed top-5 right-5 z-50 flex items-center gap-3 bg-white border border-slate-200 shadow-xl rounded-xl px-4 py-3 transform transition-all duration-300 translate-y-[-100px] opacity-0 pointer-events-none" data-purpose="toast-alert" id="toastNotification">
+<div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0" id="toastIcon">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<div>
+<p class="text-sm font-semibold text-slate-800" id="toastTitle">Success</p>
+<p class="text-xs text-slate-500" id="toastMessage">User privileges successfully updated.</p>
+</div>
+<button class="text-slate-400 hover:text-slate-600 ml-2" onclick="hideToast()">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+</div>
+<!-- END: ToastNotification -->
+<!-- BEGIN: DeleteModal -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-200" data-purpose="modal-delete" id="deleteModal">
+<div class="bg-white rounded-2xl max-w-md w-full mx-4 shadow-2xl border border-slate-100 p-6 transform transition-all scale-95 duration-200" id="deleteModalCard">
+<div class="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mb-4">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<h3 class="text-lg font-bold text-slate-900">Delete User Account?</h3>
+<p class="text-sm text-slate-500 mt-1 mb-6">
+        Are you sure you want to remove <span class="font-semibold text-slate-700" id="deleteUserName">Ram C</span>? This will revoke all role privileges and cannot be undone.
+      </p>
+<div class="flex items-center justify-end gap-3">
+<button class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition" onclick="closeDeleteModal()" type="button">Cancel</button>
+<button class="px-4 py-2 rounded-lg text-sm font-medium bg-red-600 hover:bg-red-700 text-white shadow-sm transition" onclick="confirmDeleteUser()" type="button">Yes, Delete User</button>
+</div>
+</div>
+</div>
+<!-- END: DeleteModal -->
+<!-- BEGIN: AppLayoutWrapper -->
+<div class="flex h-screen overflow-hidden">
+<!-- BEGIN: LeftSidebar -->
+<aside class="w-64 bg-white border-r border-slate-200 flex flex-col justify-between shrink-0 transition-all duration-300" id="sidebar">
+<div>
+<!-- Sidebar Brand Logo matching Valli Stay reference -->
+<div class="h-20 flex items-center justify-between px-6 border-b border-slate-100">
+<div class="flex items-baseline gap-1">
+<span class="font-script text-3xl font-bold tracking-tight text-slate-800">Valli</span>
+<span class="text-[11px] font-bold tracking-widest uppercase text-slate-500 ml-1">STAY</span>
+</div>
+<button aria-label="Collapse Menu" class="w-7 h-7 rounded-md border border-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition" type="button">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M11 19l-7-7 7-7m8 14l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+</div>
+<!-- Navigation Menu -->
+<nav aria-label="Main Navigation" class="p-4 space-y-1.5">
+<!-- Item: Dashboard -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium text-sm transition" href="#">
+<svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Dashboard</span>
+</a>
+<!-- Item: Customers -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium text-sm transition" href="#">
+<svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Customers</span>
+</a>
+<!-- Item: Invoices -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium text-sm transition" href="#">
+<svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Invoices</span>
+</a>
+<!-- Item: Departments -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium text-sm transition" href="#">
+<svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Departments</span>
+</a>
+<!-- Item: Access Management (ACTIVE: Brand blue pill) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-brand-600 text-white font-medium text-sm shadow-sm transition" href="javascript:void(0)" onclick="switchView('list')">
+<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="tracking-wide">Access Management</span>
+</a>
+</nav>
+</div>
+<!-- Sidebar Bottom Profile / Log out -->
+<div class="p-4 border-t border-slate-100">
+<div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-100">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-8 h-8 rounded-full bg-slate-800 text-white text-xs font-semibold flex items-center justify-center shrink-0">
+              AD
+            </div>
+<div class="min-w-0">
+<p class="text-xs font-semibold text-slate-800 truncate">Administrator</p>
+<p class="text-[11px] text-slate-400 truncate">admin@vallistay.com</p>
+</div>
+</div>
+<button class="text-slate-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-white transition" title="Sign out">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+</div>
+</aside>
+<!-- END: LeftSidebar -->
+<!-- BEGIN: MainContentArea -->
+<div class="flex-1 flex flex-col min-w-0 overflow-y-auto custom-scrollbar">
+<!-- BEGIN: TopBarHeader -->
+<header class="h-20 bg-white border-b border-slate-200 px-8 flex items-center justify-between shrink-0 sticky top-0 z-20">
+<div class="flex items-center gap-4">
+<button aria-label="Toggle Navigation" class="text-slate-500 hover:text-slate-800 p-1 rounded-md" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- Breadcrumb matching reference image -->
+<div>
+<h1 class="text-xs font-bold uppercase tracking-wider text-slate-800">ACCESS MANAGEMENT</h1>
+<nav class="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+<span>Home</span>
+<span>/</span>
+<span class="text-slate-500 font-semibold" id="breadcrumbCurrent">users-and-permissions</span>
+</nav>
+</div>
+</div>
+<!-- Top Right Actions -->
+<div class="flex items-center gap-4">
+<!-- Quick Screen Selector for fast testing/evaluation -->
+<div class="hidden md:flex items-center bg-slate-100 p-1 rounded-xl text-xs font-medium text-slate-600">
+<button class="px-3 py-1.5 rounded-lg bg-white shadow-xs text-brand-600 font-semibold transition" id="nav-btn-list" onclick="switchView('list')">List View</button>
+<button class="px-3 py-1.5 rounded-lg hover:text-slate-900 transition" id="nav-btn-create" onclick="switchView('create')">Create User</button>
+<button class="px-3 py-1.5 rounded-lg hover:text-slate-900 transition" id="nav-btn-details" onclick="switchView('details')">User Profile</button>
+<button class="px-3 py-1.5 rounded-lg hover:text-slate-900 transition" id="nav-btn-history" onclick="switchView('history')">Audit Trail</button>
+</div>
+<!-- Site button matching reference -->
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition shadow-2xs">
+<svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Site</span>
+</button>
+<!-- Top profile badge matching reference -->
+<div class="relative cursor-pointer">
+<div class="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs">
+              VS
+            </div>
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white absolute bottom-0 right-0"></span>
+</div>
+</div>
+</header>
+<!-- END: TopBarHeader -->
+<!-- BEGIN: ViewsContainer -->
+<main class="p-6 md:p-8 space-y-6">
+<!-- ========================================== -->
+<!-- VIEW 1: Main Users & Permissions List View -->
+<!-- ========================================== -->
+<section class="space-y-6 block" data-purpose="view-users-list" id="view-list">
+<!-- Page Title & Header Actions -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<div class="flex items-center gap-2.5">
+<h2 class="text-2xl font-bold text-slate-900 tracking-tight">All Users &amp; Permissions</h2>
+<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-brand-700 border border-blue-200">14</span>
+</div>
+<p class="text-sm text-slate-500 mt-0.5">Manage staff credentials, assigned module permissions, and granular access scopes.</p>
+</div>
+<div class="flex items-center gap-3">
+<!-- Permission History Button -->
+<button class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 shadow-2xs transition" onclick="switchView('history')">
+<svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Permission History</span>
+</button>
+<!-- + New User Button -->
+<button class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-xs font-semibold text-white shadow-sm transition" onclick="switchView('create')">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>+ New User</span>
+</button>
+</div>
+</div>
+<!-- 4 Stat Summary Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" data-purpose="stat-metrics">
+<div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs">
+<div class="flex items-center justify-between">
+<span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Users</span>
+<div class="w-8 h-8 rounded-lg bg-blue-50 text-brand-600 flex items-center justify-center">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+</div>
+<p class="text-2xl font-bold text-slate-800 mt-2">14</p>
+<div class="flex items-center gap-1.5 mt-1 text-xs text-emerald-600 font-medium">
+<span>↑ +2 this month</span>
+</div>
+</div>
+<div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs">
+<div class="flex items-center justify-between">
+<span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Active Users</span>
+<div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+</div>
+<p class="text-2xl font-bold text-slate-800 mt-2">12</p>
+<div class="flex items-center gap-1.5 mt-1 text-xs text-slate-500 font-medium">
+<span>85.7% active rate</span>
+</div>
+</div>
+<div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs">
+<div class="flex items-center justify-between">
+<span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Admin Users</span>
+<div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+</div>
+<p class="text-2xl font-bold text-slate-800 mt-2">3</p>
+<div class="flex items-center gap-1.5 mt-1 text-xs text-slate-500 font-medium">
+<span>Full system privileges</span>
+</div>
+</div>
+<div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs">
+<div class="flex items-center justify-between">
+<span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Invoice Access</span>
+<div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+</div>
+<p class="text-2xl font-bold text-slate-800 mt-2">9</p>
+<div class="flex items-center gap-1.5 mt-1 text-xs text-slate-500 font-medium">
+<span>Billing &amp; export rights</span>
+</div>
+</div>
+</div>
+<!-- Main Table Card Container -->
+<div class="bg-white rounded-xl border border-slate-200/80 shadow-2xs overflow-hidden">
+<!-- Filter & Search Controls Header -->
+<div class="p-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<!-- Search box -->
+<div class="relative flex-1 max-w-md">
+<svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<input class="w-full pl-10 pr-4 py-2 rounded-xl text-xs bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition text-slate-800 placeholder:text-slate-400" id="userSearchInput" onkeyup="filterUserList()" placeholder="Search by name, email, or mobile..." type="text"/>
+</div>
+<!-- Filter Dropdowns & View toggles -->
+<div class="flex items-center flex-wrap gap-2.5">
+<select class="py-1.5 px-3 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-700 focus:ring-1 focus:ring-brand-500" id="roleFilter" onchange="filterUserList()">
+<option value="all">All Roles</option>
+<option value="Admin">Admin</option>
+<option value="User">User</option>
+</select>
+<select class="py-1.5 px-3 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-700 focus:ring-1 focus:ring-brand-500" id="statusFilter" onchange="filterUserList()">
+<option value="all">All Status</option>
+<option value="Active">Active</option>
+<option value="Inactive">Inactive</option>
+</select>
+<!-- Table vs Grid toggle -->
+<div class="flex items-center bg-slate-100 rounded-lg p-0.5 border border-slate-200">
+<button class="p-1.5 rounded-md bg-white text-brand-600 shadow-2xs" id="viewModeTableBtn" onclick="setDisplayMode('table')" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h16M4 18h16" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+<button class="p-1.5 rounded-md text-slate-400 hover:text-slate-700" id="viewModeCardBtn" onclick="setDisplayMode('cards')" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+</div>
+</div>
+</div>
+<!-- Table View -->
+<div class="overflow-x-auto" id="usersTableView">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-slate-200 bg-slate-50/75 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+<th class="py-3 px-6">User</th>
+<th class="py-3 px-4">Email</th>
+<th class="py-3 px-4">User Type</th>
+<th class="py-3 px-4">Modules Assigned</th>
+<th class="py-3 px-4">Permissions</th>
+<th class="py-3 px-4">Status</th>
+<th class="py-3 px-4">Last Updated</th>
+<th class="py-3 px-6 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 text-xs" id="userTableBody">
+<!-- Row 1: Ram C -->
+<tr class="hover:bg-slate-50/70 transition group user-row" data-email="user@gmail.com" data-name="Ram C" data-role="User" data-status="Active">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-blue-100 text-brand-700 font-bold flex items-center justify-center shrink-0">
+                          RC
+                        </div>
+<div>
+<p class="font-semibold text-slate-800">Ram C</p>
+<p class="text-[11px] text-slate-400">+91 98563 28653</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-4 font-mono text-slate-600">user@gmail.com</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 text-brand-700 border border-blue-200">
+                        User
+                      </span>
+</td>
+<td class="py-4 px-4">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-medium text-[10px]">Invoice</span>
+<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-medium text-[10px]">Customers</span>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="flex items-center gap-1 flex-wrap">
+<span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Create</span>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-sky-50 text-sky-700 border border-sky-200">Update</span>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-rose-50 text-rose-700 border border-rose-200">Delete</span>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600">+1 more</span>
+</div>
+</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active
+                      </span>
+</td>
+<td class="py-4 px-4 text-slate-500 whitespace-nowrap">25 Sep 2024, 12:30 PM</td>
+<td class="py-4 px-6 text-right">
+<div class="flex items-center justify-end gap-1.5">
+<button class="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-blue-50 transition" onclick="switchView('details')" title="View Permissions">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+<button class="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition" onclick="switchView('create')" title="Edit User">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+<button class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition" onclick="openDeleteModal('Ram C')" title="Delete User">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2: Priya Sharma -->
+<tr class="hover:bg-slate-50/70 transition group user-row" data-email="priya.s@vallistay.com" data-name="Priya Sharma" data-role="Admin" data-status="Active">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-purple-100 text-purple-700 font-bold flex items-center justify-center shrink-0">
+                          PS
+                        </div>
+<div>
+<p class="font-semibold text-slate-800">Priya Sharma</p>
+<p class="text-[11px] text-slate-400">+91 98451 22910</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-4 font-mono text-slate-600">priya.s@vallistay.com</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+                        Admin
+                      </span>
+</td>
+<td class="py-4 px-4">
+<span class="text-xs font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded">All 4 Modules</span>
+</td>
+<td class="py-4 px-4">
+<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-purple-100 text-purple-800 border border-purple-200">Full 16 Scopes</span>
+</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active
+                      </span>
+</td>
+<td class="py-4 px-4 text-slate-500 whitespace-nowrap">24 Sep 2024, 04:15 PM</td>
+<td class="py-4 px-6 text-right">
+<div class="flex items-center justify-end gap-1.5">
+<button class="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-blue-50 transition" onclick="switchView('details')"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+<button class="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition" onclick="switchView('create')"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+<button class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition" onclick="openDeleteModal('Priya Sharma')"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+</div>
+</td>
+</tr>
+<!-- Row 3: Arun Kumar -->
+<tr class="hover:bg-slate-50/70 transition group user-row" data-email="arun.k@vallistay.com" data-name="Arun Kumar" data-role="User" data-status="Active">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center shrink-0">
+                          AK
+                        </div>
+<div>
+<p class="font-semibold text-slate-800">Arun Kumar</p>
+<p class="text-[11px] text-slate-400">+91 97892 11023</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-4 font-mono text-slate-600">arun.k@vallistay.com</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 text-brand-700 border border-blue-200">
+                        User
+                      </span>
+</td>
+<td class="py-4 px-4">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-medium text-[10px]">Customers</span>
+<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-medium text-[10px]">Departments</span>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="flex items-center gap-1 flex-wrap">
+<span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">View</span>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Create</span>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-sky-50 text-sky-700 border border-sky-200">Update</span>
+</div>
+</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active
+                      </span>
+</td>
+<td class="py-4 px-4 text-slate-500 whitespace-nowrap">22 Sep 2024, 10:00 AM</td>
+<td class="py-4 px-6 text-right">
+<div class="flex items-center justify-end gap-1.5">
+<button class="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-blue-50 transition" onclick="switchView('details')"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+<button class="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition" onclick="switchView('create')"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+<button class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition" onclick="openDeleteModal('Arun Kumar')"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+</div>
+</td>
+</tr>
+<!-- Row 4: Sneha Reddy -->
+<tr class="hover:bg-slate-50/70 transition group user-row" data-email="sneha.r@vallistay.com" data-name="Sneha Reddy" data-role="User" data-status="Inactive">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-200 text-slate-600 font-bold flex items-center justify-center shrink-0">
+                          SR
+                        </div>
+<div>
+<p class="font-semibold text-slate-800">Sneha Reddy</p>
+<p class="text-[11px] text-slate-400">+91 91234 56789</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-4 font-mono text-slate-600">sneha.r@vallistay.com</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 text-brand-700 border border-blue-200">
+                        User
+                      </span>
+</td>
+<td class="py-4 px-4">
+<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-medium text-[10px]">Invoice</span>
+</td>
+<td class="py-4 px-4">
+<div class="flex items-center gap-1 flex-wrap">
+<span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Create</span>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-purple-50 text-purple-700 border border-purple-200">Export</span>
+</div>
+</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full border border-slate-200">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Inactive
+                      </span>
+</td>
+<td class="py-4 px-4 text-slate-500 whitespace-nowrap">19 Sep 2024, 02:45 PM</td>
+<td class="py-4 px-6 text-right">
+<div class="flex items-center justify-end gap-1.5">
+<button class="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-blue-50 transition" onclick="switchView('details')"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+<button class="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition" onclick="switchView('create')"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+<button class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition" onclick="openDeleteModal('Sneha Reddy')"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+</div>
+</td>
+</tr>
+<!-- Row 5: Karthik V -->
+<tr class="hover:bg-slate-50/70 transition group user-row" data-email="karthik.v@vallistay.com" data-name="Karthik V" data-role="Admin" data-status="Active">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-amber-100 text-amber-800 font-bold flex items-center justify-center shrink-0">
+                          KV
+                        </div>
+<div>
+<p class="font-semibold text-slate-800">Karthik V</p>
+<p class="text-[11px] text-slate-400">+91 98765 43210</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-4 font-mono text-slate-600">karthik.v@vallistay.com</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+                        Admin
+                      </span>
+</td>
+<td class="py-4 px-4">
+<span class="text-xs font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded">All Modules</span>
+</td>
+<td class="py-4 px-4">
+<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">Full Access</span>
+</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active
+                      </span>
+</td>
+<td class="py-4 px-4 text-slate-500 whitespace-nowrap">15 Sep 2024, 09:30 AM</td>
+<td class="py-4 px-6 text-right">
+<div class="flex items-center justify-end gap-1.5">
+<button class="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-blue-50 transition" onclick="switchView('details')"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+<button class="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition" onclick="switchView('create')"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+<button class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition" onclick="openDeleteModal('Karthik V')"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Grid/Card View (Alternative display) -->
+<div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 hidden" id="usersCardView">
+<!-- Card 1 -->
+<div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50 hover:border-brand-200 transition">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-blue-100 text-brand-700 font-bold flex items-center justify-center">RC</div>
+<div>
+<h4 class="font-bold text-sm text-slate-800">Ram C</h4>
+<p class="text-xs text-slate-500">user@gmail.com</p>
+</div>
+</div>
+<span class="px-2 py-0.5 text-[11px] rounded-full bg-emerald-100 text-emerald-700 font-semibold">Active</span>
+</div>
+<div class="mt-4 pt-3 border-t border-slate-200/60 space-y-2">
+<div class="flex justify-between text-xs"><span class="text-slate-500">Type:</span><span class="font-medium text-slate-700">User</span></div>
+<div class="flex justify-between text-xs"><span class="text-slate-500">Modules:</span><span class="font-medium text-slate-700">Invoice, Customers</span></div>
+<div class="flex justify-between text-xs"><span class="text-slate-500">Permissions:</span><span class="font-semibold text-brand-600">4 Scopes</span></div>
+</div>
+<div class="mt-4 flex gap-2">
+<button class="flex-1 py-1.5 text-xs font-semibold text-brand-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition" onclick="switchView('details')">View Details</button>
+<button class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition" onclick="switchView('create')">Edit</button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50 hover:border-brand-200 transition">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-purple-100 text-purple-700 font-bold flex items-center justify-center">PS</div>
+<div>
+<h4 class="font-bold text-sm text-slate-800">Priya Sharma</h4>
+<p class="text-xs text-slate-500">priya.s@vallistay.com</p>
+</div>
+</div>
+<span class="px-2 py-0.5 text-[11px] rounded-full bg-purple-100 text-purple-700 font-semibold">Admin</span>
+</div>
+<div class="mt-4 pt-3 border-t border-slate-200/60 space-y-2">
+<div class="flex justify-between text-xs"><span class="text-slate-500">Type:</span><span class="font-medium text-slate-700">Admin</span></div>
+<div class="flex justify-between text-xs"><span class="text-slate-500">Modules:</span><span class="font-medium text-slate-700">All Modules</span></div>
+<div class="flex justify-between text-xs"><span class="text-slate-500">Permissions:</span><span class="font-semibold text-purple-600">Full 16 Scopes</span></div>
+</div>
+<div class="mt-4 flex gap-2">
+<button class="flex-1 py-1.5 text-xs font-semibold text-brand-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition" onclick="switchView('details')">View Details</button>
+<button class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition" onclick="switchView('create')">Edit</button>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50 hover:border-brand-200 transition">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center">AK</div>
+<div>
+<h4 class="font-bold text-sm text-slate-800">Arun Kumar</h4>
+<p class="text-xs text-slate-500">arun.k@vallistay.com</p>
+</div>
+</div>
+<span class="px-2 py-0.5 text-[11px] rounded-full bg-emerald-100 text-emerald-700 font-semibold">Active</span>
+</div>
+<div class="mt-4 pt-3 border-t border-slate-200/60 space-y-2">
+<div class="flex justify-between text-xs"><span class="text-slate-500">Type:</span><span class="font-medium text-slate-700">User</span></div>
+<div class="flex justify-between text-xs"><span class="text-slate-500">Modules:</span><span class="font-medium text-slate-700">Customers, Departments</span></div>
+<div class="flex justify-between text-xs"><span class="text-slate-500">Permissions:</span><span class="font-semibold text-brand-600">3 Scopes</span></div>
+</div>
+<div class="mt-4 flex gap-2">
+<button class="flex-1 py-1.5 text-xs font-semibold text-brand-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition" onclick="switchView('details')">View Details</button>
+<button class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition" onclick="switchView('create')">Edit</button>
+</div>
+</div>
+</div>
+<!-- Empty State element if filters yield zero results -->
+<div class="p-12 text-center hidden" id="emptySearchState">
+<div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 mx-auto flex items-center justify-center mb-4">
+<svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<h3 class="text-base font-bold text-slate-800">No users found</h3>
+<p class="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-4">No matching accounts found for the current query or filter criteria.</p>
+<button class="text-xs font-semibold text-brand-600 hover:underline" onclick="resetFilters()">Reset all filters</button>
+</div>
+<!-- Pagination Bar matching reference footer -->
+<div class="p-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+<p>Showing <span class="font-semibold text-slate-800">1-5</span> of <span class="font-semibold text-slate-800">14</span> users</p>
+<div class="flex items-center gap-1">
+<button class="w-7 h-7 rounded border border-slate-200 flex items-center justify-center hover:bg-slate-50 text-slate-400 transition" disabled="">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+<button class="w-7 h-7 rounded bg-brand-600 text-white font-semibold flex items-center justify-center shadow-xs">1</button>
+<button class="w-7 h-7 rounded border border-slate-200 flex items-center justify-center hover:bg-slate-50 text-slate-700 transition font-medium">2</button>
+<button class="w-7 h-7 rounded border border-slate-200 flex items-center justify-center hover:bg-slate-50 text-slate-700 transition font-medium">3</button>
+<button class="w-7 h-7 rounded border border-slate-200 flex items-center justify-center hover:bg-slate-50 text-slate-700 transition">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- ============================================== -->
+<!-- VIEW 2: Create / Edit User & Permission Matrix -->
+<!-- ============================================== -->
+<section class="space-y-6 hidden" data-purpose="view-create-user" id="view-create">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<button class="w-8 h-8 rounded-lg border border-slate-200 bg-white flex items-center justify-center text-slate-500 hover:text-slate-900 transition" onclick="switchView('list')">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M10 19l-7-7m0 0l7-7m-7 7h18" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+<div>
+<h2 class="text-xl font-bold text-slate-900">Create / Edit User Privileges</h2>
+<p class="text-xs text-slate-500">Configure personal account details, role type, and module permission scopes.</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-4 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition" onclick="switchView('list')">Cancel</button>
+<button class="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-xs font-semibold text-white shadow-sm transition" id="saveUserBtn" onclick="simulateSaveUser()">
+<span class="hidden" id="saveBtnSpinner">
+<svg class="animate-spin w-3.5 h-3.5 text-white" fill="none" viewbox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor"></path></svg>
+</span>
+<span id="saveBtnText">Save User &amp; Permissions</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Left 2 Cols: Form and Matrix -->
+<div class="lg:col-span-2 space-y-6">
+<!-- Section 1: User Account Information -->
+<div class="bg-white rounded-xl border border-slate-200/80 shadow-2xs p-6">
+<div class="flex items-center gap-2.5 pb-4 border-b border-slate-100 mb-5">
+<div class="w-7 h-7 rounded-md bg-blue-50 text-brand-600 flex items-center justify-center text-xs font-bold">1</div>
+<h3 class="font-bold text-sm text-slate-800">User Information</h3>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div>
+<label class="block text-xs font-semibold text-slate-700 mb-1.5">First Name <span class="text-rose-500">*</span></label>
+<input class="w-full px-3 py-2 rounded-xl text-xs border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500" id="formFirstName" type="text" value="Ram"/>
+</div>
+<div>
+<label class="block text-xs font-semibold text-slate-700 mb-1.5">Last Name <span class="text-rose-500">*</span></label>
+<input class="w-full px-3 py-2 rounded-xl text-xs border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500" id="formLastName" type="text" value="C"/>
+</div>
+<div>
+<label class="block text-xs font-semibold text-slate-700 mb-1.5">Email Address <span class="text-rose-500">*</span></label>
+<input class="w-full px-3 py-2 rounded-xl text-xs border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500" id="formEmail" type="email" value="user@gmail.com"/>
+</div>
+<div>
+<label class="block text-xs font-semibold text-slate-700 mb-1.5">Mobile Number <span class="text-rose-500">*</span></label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-400">+91</span>
+<input class="w-full pl-11 pr-3 py-2 rounded-xl text-xs border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500" id="formMobile" type="tel" value="9856328653"/>
+</div>
+</div>
+<!-- Password & Confirm with Eye Toggle -->
+<div>
+<label class="block text-xs font-semibold text-slate-700 mb-1.5">Password</label>
+<div class="relative">
+<input class="w-full pr-9 pl-3 py-2 rounded-xl text-xs border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500" id="inputPass" type="password" value="SecretPassword123"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600" onclick="togglePassVisibility('inputPass')" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+</div>
+</div>
+<div>
+<label class="block text-xs font-semibold text-slate-700 mb-1.5">Confirm Password</label>
+<div class="relative">
+<input class="w-full pr-9 pl-3 py-2 rounded-xl text-xs border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500" id="inputPassConfirm" oninput="checkPassMatch()" type="password" value="SecretPassword123"/>
+<span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-emerald-600 font-bold" id="passMatchBadge">MATCH</span>
+</div>
+</div>
+</div>
+<!-- User Type Radios -->
+<div class="mt-5 pt-4 border-t border-slate-100">
+<label class="block text-xs font-semibold text-slate-700 mb-2">User Type Role</label>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+<label class="flex items-start gap-3 p-3 rounded-xl border border-blue-500 bg-blue-50/40 cursor-pointer">
+<input checked="" class="mt-0.5 text-brand-600 focus:ring-brand-500" name="userType" onchange="handleUserTypeChange('User')" type="radio" value="User"/>
+<div>
+<span class="text-xs font-bold text-slate-800 block">Standard User</span>
+<span class="text-[11px] text-slate-500">Granular permissions configured according to specific module operations below.</span>
+</div>
+</label>
+<label class="flex items-start gap-3 p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
+<input class="mt-0.5 text-brand-600 focus:ring-brand-500" name="userType" onchange="handleUserTypeChange('Admin')" type="radio" value="Admin"/>
+<div>
+<span class="text-xs font-bold text-slate-800 block">Administrator</span>
+<span class="text-[11px] text-slate-500">Full unconditional access to all modules, financial data, and security rules.</span>
+</div>
+</label>
+</div>
+</div>
+</div>
+<!-- Section 2: Module Permissions Matrix -->
+<div class="bg-white rounded-xl border border-slate-200/80 shadow-2xs p-6">
+<div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded-md bg-blue-50 text-brand-600 flex items-center justify-center text-xs font-bold">2</div>
+<div>
+<h3 class="font-bold text-sm text-slate-800">Module Permissions Matrix</h3>
+<p class="text-[11px] text-slate-500">Enable or disable specific CRUD operations per module</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-xs font-semibold text-brand-600 hover:text-brand-800 px-2.5 py-1 rounded bg-blue-50" onclick="toggleAllMatrixCheckboxes(true)" type="button">Select All</button>
+<button class="text-xs font-semibold text-slate-500 hover:text-slate-800 px-2.5 py-1 rounded bg-slate-100" onclick="toggleAllMatrixCheckboxes(false)" type="button">Clear</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-slate-200 bg-slate-50/60 text-[11px] font-bold text-slate-500 uppercase">
+<th class="py-2.5 px-4">Module</th>
+<th class="py-2.5 px-3 text-center">View</th>
+<th class="py-2.5 px-3 text-center">Create</th>
+<th class="py-2.5 px-3 text-center">Update</th>
+<th class="py-2.5 px-3 text-center">Delete</th>
+<th class="py-2.5 px-3 text-center">Export</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 text-xs">
+<!-- Module 1: Invoices -->
+<tr class="hover:bg-slate-50/50">
+<td class="py-3 px-4">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<div>
+<p class="font-bold text-slate-800">Invoice</p>
+<p class="text-[10px] text-slate-400">Billing records, payment receipts &amp; statements</p>
+</div>
+</div>
+</td>
+<td class="text-center py-3"><input checked="" class="matrix-cb rounded text-brand-600 focus:ring-brand-500" onchange="updateMatrixStats()" type="checkbox"/></td>
+<td class="text-center py-3"><input checked="" class="matrix-cb rounded text-brand-600 focus:ring-brand-500" onchange="updateMatrixStats()" type="checkbox"/></td>
+<td class="text-center py-3"><input checked="" class="matrix-cb rounded text-brand-600 focus:ring-brand-500" onchange="updateMatrixStats()" type="checkbox"/></td>
+<td class="text-center py-3"><input checked="" class="matrix-cb rounded text-brand-600 focus:ring-brand-500" onchange="updateMatrixStats()" type="checkbox"/></td>
+<td class="text-center py-3"><input checked="" class="matrix-cb rounded text-brand-600 focus:ring-brand-500" onchange="updateMatrixStats()" type="checkbox"/></td>
+</tr>
+<!-- Module 2: Customers -->
+<tr class="hover:bg-slate-50/50">
+<td class="py-3 px-4">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded bg-blue-50 text-brand-600 flex items-center justify-center shrink-0">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<div>
+<p class="font-bold text-slate-800">Customers</p>
+<p class="text-[10px] text-slate-400">Guest directory, contact cards &amp; profiles</p>
+</div>
+</div>
+</td>
+<td class="text-center py-3"><input checked="" class="matrix-cb rounded text-brand-600 focus:ring-brand-500" onchange="updateMatrixStats()" type="checkbox"/></td>
+<td class="text-center py-3"><input checked="" class="matrix-cb rounded text-brand-600 focus:ring-brand-500" onchange="updateMatrixStats()" type="checkbox"/></td>
+<td class="text-center py-3"><input checked="" class="matrix-cb rounded text-brand-600 focus:ring-brand-500" onchange="updateMatrixStats()" type="checkbox"/></td>
+<td class="text-center py-3"><input class="matrix-cb rounded text-brand-600 focus:ring-brand-500" onchange="updateMatrixStats()" type="checkbox"/></td>
+<td class="text-center py-3"><input checked="" class="matrix-cb rounded text-brand-600 focus:ring-brand-500" onchange="updateMatrixStats()" type="checkbox"/></td>
+</tr>
+<!-- Module 3: Departments -->
+<tr class="hover:bg-slate-50/50">
+<td class="py-3 px-4">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<div>
+<p class="font-bold text-slate-800">Departments</p>
+<p class="text-[10px] text-slate-400">Housekeeping, maintenance &amp; room wings</p>
+</div>
+</div>
+</td>
+<td class="text-center py-3"><input checked="" class="matrix-cb rounded text-brand-600 focus:ring-brand-500" onchange="updateMatrixStats()" type="checkbox"/></td>
+<td class="text-center py-3"><input class="matrix-cb rounded text-brand-600 focus:ring-brand-500" onchange="updateMatrixStats()" type="checkbox"/></td>
+<td class="text-center py-3"><input class="matrix-cb rounded text-brand-600 focus:ring-brand-500" onchange="updateMatrixStats()" type="checkbox"/></td>
+<td class="text-center py-3"><input class="matrix-cb rounded text-brand-600 focus:ring-brand-500" onchange="updateMatrixStats()" type="checkbox"/></td>
+<td class="text-center py-3"><input class="matrix-cb rounded text-brand-600 focus:ring-brand-500" onchange="updateMatrixStats()" type="checkbox"/></td>
+</tr>
+<!-- Module 4: Access Management -->
+<tr class="hover:bg-slate-50/50">
+<td class="py-3 px-4">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<div>
+<p class="font-bold text-slate-800">Access Management</p>
+<p class="text-[10px] text-slate-400">Security groups, permission scopes &amp; audit logs</p>
+</div>
+</div>
+</td>
+<td class="text-center py-3"><input class="matrix-cb rounded text-brand-600 focus:ring-brand-500" onchange="updateMatrixStats()" type="checkbox"/></td>
+<td class="text-center py-3"><input class="matrix-cb rounded text-brand-600 focus:ring-brand-500" onchange="updateMatrixStats()" type="checkbox"/></td>
+<td class="text-center py-3"><input class="matrix-cb rounded text-brand-600 focus:ring-brand-500" onchange="updateMatrixStats()" type="checkbox"/></td>
+<td class="text-center py-3"><input class="matrix-cb rounded text-brand-600 focus:ring-brand-500" onchange="updateMatrixStats()" type="checkbox"/></td>
+<td class="text-center py-3"><input class="matrix-cb rounded text-brand-600 focus:ring-brand-500" onchange="updateMatrixStats()" type="checkbox"/></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Right 1 Col: Live Permission Summary Panel -->
+<div class="space-y-6">
+<div class="bg-white rounded-xl border border-slate-200/80 shadow-2xs p-5 sticky top-28">
+<h3 class="font-bold text-sm text-slate-800 pb-3 border-b border-slate-100">Live Access Scope Summary</h3>
+<div class="py-4 space-y-3">
+<div class="flex justify-between items-center text-xs">
+<span class="text-slate-500">Selected Modules:</span>
+<span class="font-bold text-slate-800" id="summaryModulesCount">3 of 4</span>
+</div>
+<div class="flex justify-between items-center text-xs">
+<span class="text-slate-500">Total Scopes Enabled:</span>
+<span class="font-bold text-brand-600" id="summaryPermsCount">10 / 20</span>
+</div>
+<div class="flex justify-between items-center text-xs">
+<span class="text-slate-500">Calculated Security Tier:</span>
+<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-blue-100 text-brand-700" id="summaryTier">Custom Operator</span>
+</div>
+</div>
+<div class="p-3 bg-slate-50 rounded-lg border border-slate-200 text-[11px] text-slate-600 space-y-2">
+<div class="flex items-center gap-1.5 font-semibold text-slate-700">
+<svg class="w-3.5 h-3.5 text-brand-600" fill="currentColor" viewbox="0 0 20 20"><path clip-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" fill-rule="evenodd"></path></svg>
+<span>Audit Notice</span>
+</div>
+<p>All permission assignments create an immutable timestamped entry in the audit history logs.</p>
+</div>
+<div class="mt-5 space-y-2">
+<button class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-xs font-semibold text-white shadow-sm transition flex items-center justify-center gap-2" onclick="simulateSaveUser()" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span>Apply Privileges</span>
+</button>
+<button class="w-full py-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-600 hover:bg-slate-50 transition" onclick="switchView('list')" type="button">
+                    Discard Changes
+                  </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ============================================== -->
+<!-- VIEW 3: User Details & Deep-dive Profile Card -->
+<!-- ============================================== -->
+<section class="space-y-6 hidden" data-purpose="view-user-details" id="view-details">
+<!-- Header and back button -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<button class="w-8 h-8 rounded-lg border border-slate-200 bg-white flex items-center justify-center text-slate-500 hover:text-slate-900 transition" onclick="switchView('list')">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M10 19l-7-7m0 0l7-7m-7 7h18" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+<div>
+<h2 class="text-xl font-bold text-slate-900">User Profile &amp; Permissions</h2>
+<p class="text-xs text-slate-500">Assigned scopes and module operational authorizations.</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition" onclick="switchView('create')">
+<svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span>Edit Permissions</span>
+</button>
+<button class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-red-200 text-xs font-semibold text-red-600 hover:bg-red-50 transition" onclick="openDeleteModal('Ram C')">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span>Delete</span>
+</button>
+</div>
+</div>
+<!-- Profile Top Card -->
+<div class="bg-white rounded-xl border border-slate-200/80 shadow-2xs p-6">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 rounded-2xl bg-blue-100 text-brand-700 text-xl font-bold flex items-center justify-center shrink-0 border border-blue-200">
+                  RC
+                </div>
+<div>
+<div class="flex items-center gap-2">
+<h3 class="text-lg font-bold text-slate-900">Ram C</h3>
+<span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">Active</span>
+<span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-brand-700">Operator User</span>
+</div>
+<p class="text-xs text-slate-500 font-mono mt-0.5">user@gmail.com • +91 98563 28653</p>
+<p class="text-[11px] text-slate-400 mt-1">User ID: <span class="font-mono text-slate-600">USR-8491204</span> • Created: 12 Aug 2024</p>
+</div>
+</div>
+<!-- Quick meta stats -->
+<div class="flex items-center gap-6 border-t md:border-t-0 md:border-l border-slate-100 pt-4 md:pt-0 md:pl-6 text-xs">
+<div>
+<span class="text-slate-400 block">Assigned Modules</span>
+<span class="font-bold text-slate-800 text-base">2 Modules</span>
+</div>
+<div>
+<span class="text-slate-400 block">Total Grants</span>
+<span class="font-bold text-brand-600 text-base">8 Permissions</span>
+</div>
+<div>
+<span class="text-slate-400 block">Last Active</span>
+<span class="font-medium text-slate-700">Today, 12:30 PM</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Module Permissions Cards Grid -->
+<div class="space-y-3">
+<h3 class="text-sm font-bold text-slate-900">Granular Module Status</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Card: Invoice -->
+<div class="bg-white rounded-xl border border-slate-200/80 p-5 shadow-2xs">
+<div class="flex items-center justify-between pb-3 border-b border-slate-100">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<div>
+<h4 class="font-bold text-xs text-slate-800">Invoice Module</h4>
+<span class="text-[10px] text-slate-400">Full operational access</span>
+</div>
+</div>
+<span class="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Enabled</span>
+</div>
+<div class="grid grid-cols-3 gap-2 mt-4 text-[11px]">
+<div class="p-2 rounded bg-emerald-50 text-emerald-800 font-medium flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span>View</span>
+</div>
+<div class="p-2 rounded bg-emerald-50 text-emerald-800 font-medium flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span>Create</span>
+</div>
+<div class="p-2 rounded bg-emerald-50 text-emerald-800 font-medium flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span>Update</span>
+</div>
+<div class="p-2 rounded bg-emerald-50 text-emerald-800 font-medium flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span>Delete</span>
+</div>
+<div class="p-2 rounded bg-emerald-50 text-emerald-800 font-medium flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span>Export</span>
+</div>
+</div>
+</div>
+<!-- Card: Customers -->
+<div class="bg-white rounded-xl border border-slate-200/80 p-5 shadow-2xs">
+<div class="flex items-center justify-between pb-3 border-b border-slate-100">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-blue-50 text-brand-600 flex items-center justify-center">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<div>
+<h4 class="font-bold text-xs text-slate-800">Guest Module</h4>
+<span class="text-[10px] text-slate-400">Directory management</span>
+</div>
+</div>
+<span class="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Enabled</span>
+</div>
+<div class="grid grid-cols-3 gap-2 mt-4 text-[11px]">
+<div class="p-2 rounded bg-emerald-50 text-emerald-800 font-medium flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span>View</span>
+</div>
+<div class="p-2 rounded bg-emerald-50 text-emerald-800 font-medium flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span>Create</span>
+</div>
+<div class="p-2 rounded bg-emerald-50 text-emerald-800 font-medium flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span>Update</span>
+</div>
+<div class="p-2 rounded bg-slate-100 text-slate-400 font-medium flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span class="line-through">Delete</span>
+</div>
+<div class="p-2 rounded bg-slate-100 text-slate-400 font-medium flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span class="line-through">Export</span>
+</div>
+</div>
+</div>
+<!-- Card: Departments -->
+<div class="bg-white rounded-xl border border-slate-200/80 p-5 shadow-2xs opacity-75">
+<div class="flex items-center justify-between pb-3 border-b border-slate-100">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<div>
+<h4 class="font-bold text-xs text-slate-800">Departments</h4>
+<span class="text-[10px] text-slate-400">No active assignment</span>
+</div>
+</div>
+<span class="text-[11px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded">Disabled</span>
+</div>
+<p class="text-xs text-slate-400 mt-4 italic">User does not possess department unit privileges.</p>
+</div>
+<!-- Card: Access Management -->
+<div class="bg-white rounded-xl border border-slate-200/80 p-5 shadow-2xs opacity-75">
+<div class="flex items-center justify-between pb-3 border-b border-slate-100">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<div>
+<h4 class="font-bold text-xs text-slate-800">Access Management</h4>
+<span class="text-[10px] text-slate-400">Admin restricted</span>
+</div>
+</div>
+<span class="text-[11px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded">Restricted</span>
+</div>
+<p class="text-xs text-slate-400 mt-4 italic">Security controls require full Administrator clearance.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- ============================================== -->
+<!-- VIEW 4: Permission History (Audit Trail) View -->
+<!-- ============================================== -->
+<section class="space-y-6 hidden" data-purpose="view-audit-history" id="view-history">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<button class="w-8 h-8 rounded-lg border border-slate-200 bg-white flex items-center justify-center text-slate-500 hover:text-slate-900 transition" onclick="switchView('list')">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M10 19l-7-7m0 0l7-7m-7 7h18" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+<div>
+<h2 class="text-xl font-bold text-slate-900">Permission History &amp; Audit Trail</h2>
+<p class="text-xs text-slate-500">Track and inspect all historical changes to user rights and access scopes.</p>
+</div>
+</div>
+<!-- Quick Export logs -->
+<button class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition shadow-2xs" onclick="showToast('Export Started', 'Audit logs exported as CSV.')">
+<svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span>Export Audit Trail</span>
+</button>
+</div>
+<!-- History Table Card -->
+<div class="bg-white rounded-xl border border-slate-200/80 shadow-2xs overflow-hidden">
+<div class="p-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+<div class="text-xs font-semibold text-slate-700">Security Audit Logs</div>
+<div class="flex items-center gap-2">
+<span class="text-xs text-slate-400">Filter type:</span>
+<select class="py-1 px-2.5 rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
+<option>All Operations</option>
+<option>Create</option>
+<option>Update</option>
+<option>Delete</option>
+</select>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-slate-200 bg-slate-50/75 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+<th class="py-3 px-6">Log ID</th>
+<th class="py-3 px-4">Change Type</th>
+<th class="py-3 px-4">Module</th>
+<th class="py-3 px-4">Target User</th>
+<th class="py-3 px-4">Diff Details (Old → New)</th>
+<th class="py-3 px-4">Executed By</th>
+<th class="py-3 px-6 text-right">Timestamp</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 text-xs">
+<!-- Audit 1 -->
+<tr class="hover:bg-slate-50/60 transition">
+<td class="py-3.5 px-6 font-mono text-[11px] text-slate-500">#HIS-9041</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-blue-50 text-brand-700 border border-blue-200">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                        UPDATE
+                      </span>
+</td>
+<td class="py-3.5 px-4 font-semibold text-slate-800">Invoice</td>
+<td class="py-3.5 px-4">
+<span class="font-medium text-slate-800">Ram C</span>
+<span class="text-[10px] text-slate-400 block font-mono">user@gmail.com</span>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200 text-[10px] font-mono">export: false</span>
+<span class="text-slate-400">→</span>
+<span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-mono">export: true</span>
+</div>
+</td>
+<td class="py-3.5 px-4 text-slate-600">admin@vallistay.com</td>
+<td class="py-3.5 px-6 text-right text-slate-500 whitespace-nowrap">25 Sep 2024, 12:30 PM</td>
+</tr>
+<!-- Audit 2 -->
+<tr class="hover:bg-slate-50/60 transition">
+<td class="py-3.5 px-6 font-mono text-[11px] text-slate-500">#HIS-9038</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                        CREATE
+                      </span>
+</td>
+<td class="py-3.5 px-4 font-semibold text-slate-800">All Modules</td>
+<td class="py-3.5 px-4">
+<span class="font-medium text-slate-800">Priya Sharma</span>
+<span class="text-[10px] text-slate-400 block font-mono">priya.s@vallistay.com</span>
+</td>
+<td class="py-3.5 px-4">
+<span class="px-2 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200 text-[10px] font-medium">Assigned Super Admin role</span>
+</td>
+<td class="py-3.5 px-4 text-slate-600">superadmin@vallistay.com</td>
+<td class="py-3.5 px-6 text-right text-slate-500 whitespace-nowrap">24 Sep 2024, 04:15 PM</td>
+</tr>
+<!-- Audit 3 -->
+<tr class="hover:bg-slate-50/60 transition">
+<td class="py-3.5 px-6 font-mono text-[11px] text-slate-500">#HIS-9012</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                        REVOKE
+                      </span>
+</td>
+<td class="py-3.5 px-4 font-semibold text-slate-800">Departments</td>
+<td class="py-3.5 px-4">
+<span class="font-medium text-slate-800">Sneha Reddy</span>
+<span class="text-[10px] text-slate-400 block font-mono">sneha.r@vallistay.com</span>
+</td>
+<td class="py-3.5 px-4">
+<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-mono">Revoked department view privileges</span>
+</td>
+<td class="py-3.5 px-4 text-slate-600">admin@vallistay.com</td>
+<td class="py-3.5 px-6 text-right text-slate-500 whitespace-nowrap">19 Sep 2024, 02:45 PM</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</main>
+<!-- END: ViewsContainer -->
+</div>
+<!-- END: MainContentArea -->
+</div>
+<!-- END: AppLayoutWrapper -->
+<!-- BEGIN: InteractiveScripts -->
+<script data-purpose="view-management">
+    // View Switcher logic to support all 4 interactive views requested
+    function switchView(viewId) {
+      const views = ['list', 'create', 'details', 'history'];
+      views.forEach(v => {
+        const el = document.getElementById(`view-${v}`);
+        const btn = document.getElementById(`nav-btn-${v}`);
+        if (el) {
+          if (v === viewId) {
+            el.classList.remove('hidden');
+            el.classList.add('block');
+          } else {
+            el.classList.add('hidden');
+            el.classList.remove('block');
+          }
+        }
+        if (btn) {
+          if (v === viewId) {
+            btn.className = 'px-3 py-1.5 rounded-lg bg-white shadow-xs text-brand-600 font-semibold transition';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg hover:text-slate-900 transition text-slate-600';
+          }
+        }
+      });
+
+      // Update breadcrumb
+      const breadcrumb = document.getElementById('breadcrumbCurrent');
+      if (breadcrumb) {
+        if (viewId === 'list') breadcrumb.textContent = 'users-and-permissions';
+        if (viewId === 'create') breadcrumb.textContent = 'create-edit-user';
+        if (viewId === 'details') breadcrumb.textContent = 'user-profile-ram-c';
+        if (viewId === 'history') breadcrumb.textContent = 'audit-trail-history';
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Toggle Table vs Card mode on View 1
+    function setDisplayMode(mode) {
+      const table = document.getElementById('usersTableView');
+      const cards = document.getElementById('usersCardView');
+      const tableBtn = document.getElementById('viewModeTableBtn');
+      const cardBtn = document.getElementById('viewModeCardBtn');
+
+      if (mode === 'table') {
+        table.classList.remove('hidden');
+        cards.classList.add('hidden');
+        tableBtn.className = 'p-1.5 rounded-md bg-white text-brand-600 shadow-2xs';
+        cardBtn.className = 'p-1.5 rounded-md text-slate-400 hover:text-slate-700';
+      } else {
+        table.classList.add('hidden');
+        cards.classList.remove('hidden');
+        cardBtn.className = 'p-1.5 rounded-md bg-white text-brand-600 shadow-2xs';
+        tableBtn.className = 'p-1.5 rounded-md text-slate-400 hover:text-slate-700';
+      }
+    }
+
+    // Live search & filters on View 1
+    function filterUserList() {
+      const search = document.getElementById('userSearchInput').value.toLowerCase();
+      const role = document.getElementById('roleFilter').value;
+      const status = document.getElementById('statusFilter').value;
+      const rows = document.querySelectorAll('.user-row');
+      let visibleCount = 0;
+
+      rows.forEach(row => {
+        const name = row.getAttribute('data-name').toLowerCase();
+        const email = row.getAttribute('data-email').toLowerCase();
+        const userRole = row.getAttribute('data-role');
+        const userStatus = row.getAttribute('data-status');
+
+        const matchesSearch = name.includes(search) || email.includes(search);
+        const matchesRole = (role === 'all' || userRole === role);
+        const matchesStatus = (status === 'all' || userStatus === status);
+
+        if (matchesSearch && matchesRole && matchesStatus) {
+          row.style.display = '';
+          visibleCount++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      const empty = document.getElementById('emptySearchState');
+      if (visibleCount === 0) {
+        empty.classList.remove('hidden');
+      } else {
+        empty.classList.add('hidden');
+      }
+    }
+
+    function resetFilters() {
+      document.getElementById('userSearchInput').value = '';
+      document.getElementById('roleFilter').value = 'all';
+      document.getElementById('statusFilter').value = 'all';
+      filterUserList();
+    }
+  </script>
+<script data-purpose="matrix-and-form-logic">
+    // Batch select all or clear matrix checkboxes
+    function toggleAllMatrixCheckboxes(state) {
+      const cbs = document.querySelectorAll('.matrix-cb');
+      cbs.forEach(cb => cb.checked = state);
+      updateMatrixStats();
+    }
+
+    // Dynamic stats update on Create User side panel
+    function updateMatrixStats() {
+      const cbs = document.querySelectorAll('.matrix-cb');
+      let checked = 0;
+      cbs.forEach(c => { if(c.checked) checked++; });
+      
+      const permCount = document.getElementById('summaryPermsCount');
+      const tier = document.getElementById('summaryTier');
+      if (permCount) permCount.textContent = `${checked} / ${cbs.length}`;
+      
+      if (tier) {
+        if (checked === cbs.length) {
+          tier.textContent = 'Full System Admin';
+          tier.className = 'px-2 py-0.5 rounded text-[11px] font-semibold bg-purple-100 text-purple-700';
+        } else if (checked > 0) {
+          tier.textContent = 'Custom Operator';
+          tier.className = 'px-2 py-0.5 rounded text-[11px] font-semibold bg-blue-100 text-brand-700';
+        } else {
+          tier.textContent = 'Zero Access';
+          tier.className = 'px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-500';
+        }
+      }
+    }
+
+    // Role radio button switch handler
+    function handleUserTypeChange(role) {
+      if (role === 'Admin') {
+        toggleAllMatrixCheckboxes(true);
+      }
+    }
+
+    // Password show/hide
+    function togglePassVisibility(id) {
+      const input = document.getElementById(id);
+      if (input.type === 'password') {
+        input.type = 'text';
+      } else {
+        input.type = 'password';
+      }
+    }
+
+    // Password match feedback
+    function checkPassMatch() {
+      const p1 = document.getElementById('inputPass').value;
+      const p2 = document.getElementById('inputPassConfirm').value;
+      const badge = document.getElementById('passMatchBadge');
+      if (p1 === p2) {
+        badge.textContent = 'MATCH';
+        badge.className = 'absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-emerald-600 font-bold';
+      } else {
+        badge.textContent = 'MISMATCH';
+        badge.className = 'absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-rose-600 font-bold';
+      }
+    }
+
+    // Simulate saving user with spinner and toast alert
+    function simulateSaveUser() {
+      const spinner = document.getElementById('saveBtnSpinner');
+      const text = document.getElementById('saveBtnText');
+      const btn = document.getElementById('saveUserBtn');
+
+      spinner.classList.remove('hidden');
+      text.textContent = 'Saving privileges...';
+      btn.disabled = true;
+
+      setTimeout(() => {
+        spinner.classList.add('hidden');
+        text.textContent = 'Save User & Permissions';
+        btn.disabled = false;
+        showToast('Account Updated', 'User privileges & module scopes saved successfully.');
+        switchView('list');
+      }, 750);
+    }
+  </script>
+<script data-purpose="modal-and-toasts">
+    // Toast notification controller
+    let toastTimeout;
+    function showToast(title, message) {
+      const toast = document.getElementById('toastNotification');
+      document.getElementById('toastTitle').textContent = title;
+      document.getElementById('toastMessage').textContent = message;
+
+      toast.classList.remove('translate-y-[-100px]', 'opacity-0', 'pointer-events-none');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        hideToast();
+      }, 4000);
+    }
+
+    function hideToast() {
+      const toast = document.getElementById('toastNotification');
+      toast.classList.add('translate-y-[-100px]', 'opacity-0', 'pointer-events-none');
+      toast.classList.remove('translate-y-0', 'opacity-100');
+    }
+
+    // Delete modal controller
+    function openDeleteModal(userName) {
+      document.getElementById('deleteUserName').textContent = userName;
+      const modal = document.getElementById('deleteModal');
+      const card = document.getElementById('deleteModalCard');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        card.classList.remove('scale-95');
+        card.classList.add('scale-100');
+      }, 10);
+    }
+
+    function closeDeleteModal() {
+      const modal = document.getElementById('deleteModal');
+      const card = document.getElementById('deleteModalCard');
+      modal.classList.add('opacity-0');
+      card.classList.remove('scale-100');
+      card.classList.add('scale-95');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 200);
+    }
+
+    function confirmDeleteUser() {
+      closeDeleteModal();
+      showToast('User Deleted', 'The requested user profile has been removed.');
+    }
+  </script>
+<!-- END: InteractiveScripts -->
+</body></html>

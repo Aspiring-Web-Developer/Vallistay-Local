@@ -1,0 +1,494 @@
+/* src/Pages/PropertyRooms/styles/roomBookingsOverview.css */
+/* Scoped stylesheet for Phase 1: Room & Bookings Property Overview */
+
+:root {
+  --rb-bg: #f8fafc;
+  --rb-card-bg: #ffffff;
+  --rb-border: #e2e8f0;
+  --rb-border-hover: #cbd5e1;
+  --rb-text-main: #0f172a;
+  --rb-text-muted: #64748b;
+  --rb-text-faint: #94a3b8;
+  --rb-primary: #2563eb;
+  --rb-primary-hover: #1d4ed8;
+  --rb-primary-light: #eff6ff;
+  --rb-green: #16a34a;
+  --rb-green-light: #dcfce7;
+  --rb-green-text: #15803d;
+  --rb-orange: #f59e0b;
+  --rb-orange-light: #fef3c7;
+  --rb-orange-text: #b45309;
+  --rb-shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05);
+  --rb-shadow-md: 0 4px 14px -2px rgba(15, 23, 42, 0.07);
+}
+
+/* Page Container */
+.rb-overview-container {
+  padding: 22px 24px 48px;
+  background-color: var(--rb-bg);
+  min-height: calc(100vh - 70px);
+  color: var(--rb-text-main);
+  font-family: 'Lato', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  box-sizing: border-box;
+}
+
+/* Breadcrumb */
+.rb-overview-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--rb-text-faint);
+  margin-bottom: 8px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.rb-overview-breadcrumb-active {
+  color: var(--rb-primary);
+}
+
+/* Header Row */
+.rb-overview-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+.rb-overview-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--rb-text-main);
+  margin: 0 0 4px 0;
+  letter-spacing: -0.02em;
+}
+
+.rb-overview-subtitle {
+  font-size: 13.5px;
+  color: var(--rb-text-muted);
+  margin: 0;
+  font-weight: 400;
+}
+
+.rb-overview-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Buttons - Mandatory Standard Sizing */
+.rb-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 9px;
+  font-size: 13.5px;
+  font-weight: 600;
+  background-color: var(--rb-primary);
+  color: #ffffff;
+  border: 1px solid var(--rb-primary);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+  transition: all 0.15s ease-in-out;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.rb-btn-primary:hover {
+  background-color: var(--rb-primary-hover);
+  border-color: var(--rb-primary-hover);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+.rb-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 9px;
+  font-size: 13.5px;
+  font-weight: 600;
+  background-color: #ffffff;
+  color: var(--rb-text-main);
+  border: 1px solid var(--rb-border);
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.rb-btn-secondary:hover {
+  background-color: #f8fafc;
+  border-color: var(--rb-border-hover);
+}
+
+.rb-btn-icon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: #ffffff;
+  border: 1px solid var(--rb-border);
+  color: var(--rb-text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  box-sizing: border-box;
+}
+
+.rb-btn-icon:hover {
+  background: #f8fafc;
+  color: var(--rb-text-main);
+  border-color: var(--rb-border-hover);
+}
+
+.rb-btn-icon.active {
+  background: #eff6ff;
+  color: var(--rb-primary);
+  border-color: #bfdbfe;
+}
+
+/* ── 4 Summary Stat Cards ── */
+.rb-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.rb-summary-card {
+  background: var(--rb-card-bg);
+  border: 1px solid var(--rb-border);
+  border-radius: 12px;
+  padding: 16px;
+  min-height: 104px;
+  box-shadow: var(--rb-shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.rb-summary-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.rb-summary-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--rb-text-muted);
+  margin-bottom: 6px;
+}
+
+.rb-summary-val {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--rb-text-main);
+  line-height: 1.1;
+}
+
+.rb-summary-sub {
+  font-size: 11px;
+  color: var(--rb-text-faint);
+  margin-top: 4px;
+}
+
+.rb-summary-icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Properties Section Surface ── */
+.rb-property-section {
+  background: var(--rb-card-bg);
+  border: 1px solid var(--rb-border);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: var(--rb-shadow-sm);
+}
+
+.rb-property-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.rb-property-section-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--rb-text-main);
+  margin: 0;
+}
+
+.rb-property-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Search Box */
+.rb-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8fafc;
+  border: 1px solid var(--rb-border);
+  border-radius: 9px;
+  padding: 0 14px;
+  height: 42px;
+  min-width: 260px;
+  box-sizing: border-box;
+}
+
+.rb-search-wrap:focus-within {
+  border-color: var(--rb-primary);
+  background: #ffffff;
+}
+
+.rb-search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 13.5px;
+  width: 100%;
+  color: var(--rb-text-main);
+}
+
+/* Filter Dropdown */
+.rb-filter-select {
+  height: 42px;
+  padding: 0 14px;
+  background: #ffffff;
+  border: 1px solid var(--rb-border);
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--rb-text-main);
+  outline: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.rb-filter-select:hover {
+  border-color: var(--rb-border-hover);
+}
+
+/* ── Properties Grid ── */
+.rb-property-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+/* ── Property Card (Stitch Specs) ── */
+.rb-property-card {
+  background: var(--rb-card-bg);
+  border: 1px solid var(--rb-border);
+  border-radius: 14px;
+  padding: 18px;
+  min-height: 205px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+
+.rb-property-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--rb-shadow-md);
+  border-color: var(--rb-border-hover);
+}
+
+.rb-property-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.rb-property-icon-box {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rb-property-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--rb-text-main);
+  margin-bottom: 3px;
+}
+
+.rb-property-location {
+  font-size: 12.5px;
+  color: var(--rb-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 14px;
+}
+
+.rb-property-code {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--rb-text-faint);
+  font-family: ui-monospace, monospace;
+}
+
+.rb-property-status-chip {
+  padding: 3px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.rb-property-status-chip.active {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.rb-property-status-chip.maintenance {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+/* Card Middle Metrics */
+.rb-property-metrics-box {
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.rb-property-metric-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.rb-property-metric-lbl {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--rb-text-faint);
+  margin-bottom: 2px;
+}
+
+.rb-property-metric-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--rb-text-main);
+}
+
+/* Card Bottom Actions */
+.rb-property-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* Styled Dropdown Menu */
+.rb-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: #ffffff;
+  border: 1px solid var(--rb-border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+  min-width: 160px;
+  padding: 6px 0;
+  z-index: 100;
+  animation: rbSlideDown 0.15s ease-out;
+}
+
+.rb-dropdown-item {
+  width: 100%;
+  padding: 8px 14px;
+  background: transparent;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--rb-text-main);
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.rb-dropdown-item:hover {
+  background: #f1f5f9;
+}
+
+@keyframes rbSlideDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Queries */
+@media (max-width: 1100px) {
+  .rb-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .rb-property-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .rb-overview-container {
+    padding: 14px 14px 40px;
+  }
+  .rb-summary-grid {
+    grid-template-columns: 1fr;
+  }
+  .rb-property-grid {
+    grid-template-columns: 1fr;
+  }
+  .rb-property-controls {
+    width: 100%;
+  }
+  .rb-search-wrap {
+    width: 100%;
+    max-width: 100%;
+  }
+}
